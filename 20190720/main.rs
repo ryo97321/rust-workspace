@@ -1,6 +1,5 @@
 fn main() {
-    let mut x = 5;
-    x = 10;
+    let a = [1, 2, 3];
 
-    println!("x is {}", x);
+    println!("a has {} elements", a.len());
 }
