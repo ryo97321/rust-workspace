@@ -1,14 +1,5 @@
 fn main() {
-    let mut x = 5;
-    let mut done = false;
-
-    while !done {
-        x += x - 3;
-
+    for x in 0..10 {
         println!("{}", x);
-
-        if x % 5 == 0 {
-            done = true;
-        }
     }
 }
