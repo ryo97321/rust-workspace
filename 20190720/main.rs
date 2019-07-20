@@ -1,5 +1,7 @@
 fn main() {
-    let a = [1, 2, 3];
+    let x: i32 = 5;
 
-    println!("a has {} elements", a.len());
+    if x == 5 {
+        println!("x is {}", x);
+    }
 }
