@@ -27,23 +27,44 @@ fn main() {
     }
     // println!("number_per_group : {}", number_per_group);
 
-    // ２次元配列の例
-    // let mut v1: Vec<Vec<i32>> = vec![vec![0; number_per_group as usize]; k as usize];
-    // println!("{:?}", v1);
 
-    // make group
-    let mut group = Vec::new();     // グループ
-    let mut count = 0;              // 値を格納するごとに++
+    // make vectorvector
+    let mut vectorvector: Vec<Vec<i32>> = Vec::new();
+    let mut group: Vec<i32> = Vec::new();     // グループ
+    let mut count = 0;                        // 値を格納するごとに++
     while count < n {
-        group.push(numbers[count as usize]);
-        count += 1;
+        for _ in 0..number_per_group {
+            group.push(numbers.remove(0));
+            count += 1;
+            if count == n {
+                break;
+            }
+        }
+        vectorvector.push(group.clone());
+        group.clear();
     }
-    // println!("{:?}", group);
+    // for i in 0..k {
+    //     for v in &vectorvector[i as usize] {
+    //         println!("{}", v);
+    //     }
+    // }
+
+    // make average_vector
+    let mut average_vector: Vec<f64> = Vec::new();
+    for i in 0..k {
+        let average: f64;;
+        let mut sum = 0.0;
+        let mut number_of_group_element = 0;
+        for v in &vectorvector[i as usize] {
+            sum += *v as f64;
+            number_of_group_element += 1;
+        }
+        average = sum / number_of_group_element as f64;
+        average_vector.push(average);
+    }
+    println!("{:?}", average_vector);
 
     // TODO
-    // 1. 二次元配列の作成
-    // 2. グループごとに平均を計算
     // 3. 最大の平均 - 最小の平均を計算し, 「平均の差」を求める
-
 
 }
