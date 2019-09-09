@@ -9,6 +9,7 @@ fn main() {
     let k: i32 = getline().trim().parse().unwrap();
     // println!("n:{}, k:{}", n, k);
 
+    // すべての数字を格納するnumbersを作成
     let mut numbers = Vec::new();
     for _ in 0.. n {
         let number: i32 = getline().trim().parse().unwrap();
@@ -19,6 +20,10 @@ fn main() {
     //     println!("{}", numbers[ui]);
     // }
 
+    // numbersを昇順にソート
+    numbers.sort();
+
+    // グループごとの数字の個数を求める
     let mut number_per_group: i32 = 0;     // グループごとの数字の個数
     if n % k == 0 {
         number_per_group = n / k;
@@ -28,7 +33,7 @@ fn main() {
     // println!("number_per_group : {}", number_per_group);
 
 
-    // make vectorvector
+    // 二次元Vectorを作成
     let mut vectorvector: Vec<Vec<i32>> = Vec::new();
     let mut group: Vec<i32> = Vec::new();     // グループ
     let mut count = 0;                        // 値を格納するごとに++
@@ -43,13 +48,9 @@ fn main() {
         vectorvector.push(group.clone());
         group.clear();
     }
-    // for i in 0..k {
-    //     for v in &vectorvector[i as usize] {
-    //         println!("{}", v);
-    //     }
-    // }
+    println!("{:?}", vectorvector);
 
-    // make average_vector
+    // 平均を格納するVectorを作成
     let mut average_vector: Vec<f64> = Vec::new();
     for i in 0..k {
         let average: f64;;
@@ -64,7 +65,18 @@ fn main() {
     }
     println!("{:?}", average_vector);
 
+    // 最大の平均と最小の平均を求める
+    let average_vector_lastindex = average_vector.len() - 1;
+    let max_average = average_vector[average_vector_lastindex];
+    let min_average = average_vector[0];
+    println!("max: {} min: {}", max_average, min_average);
+
+    // 平均の差を求める
+    let diff_average = max_average - min_average;
+    println!("diff: {}", diff_average);
+    println!("diff(ceil): {}", diff_average.ceil());
+
     // TODO
-    // 3. 最大の平均 - 最小の平均を計算し, 「平均の差」を求める
+    // 動くが予想した値が得られないため, 修正すること
 
 }
