@@ -10,3 +10,11 @@ k = 3
 3-2. min_ave = (1 + 2) / len([1, 2])
 
 4. diff_ave = max_ave - min_ave
+
+// add 20190910 15:15
+1. k個の配列をもつ配列(vectorvector)を作成
+   vectorvector[0] = [99]             numbersの最大値
+   vectorvector[1] = [1]              numbersの最小値
+   vectorvector[2] = [2, 3, 97, 98]   残りのグループは適当に入れる(各グループの要素数 >= 1)
+
+2. diff_average = vectorvector[0] - vectorvector[1];
