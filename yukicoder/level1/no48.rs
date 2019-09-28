@@ -1,4 +1,3 @@
-#[derive(Debug)]
 struct Robot {
     x: i32,
     y: i32,
@@ -66,6 +65,30 @@ fn main() {
     let mut order_count: i32 = 0;
     let mut robot = Robot::new();
 
+    // xが0, yがマイナスの時
+    if x_goal == 0 && y_goal < 0 {
+        robot.rotate_90_degree();
+        order_count += 1;
+        robot.rotate_90_degree();
+        order_count += 1;
+
+        loop {
+            if remain_y <= 0 {
+                break;
+            }
+
+            if remain_y - robot_can_move_distance <= 0 {
+                robot.move_y(remain_y * -1);
+            } else {
+                robot.move_y(robot_can_move_distance);
+            }
+            remain_y -= robot_can_move_distance;
+            order_count += 1;
+        }
+        println!("{}", order_count);
+        return;
+    }
+
     // 1. 最初の方向を決める
     if y_goal < 0 {
         if x_goal > 0 {
@@ -79,6 +102,10 @@ fn main() {
     // 2. 進行する
     if robot.direction == String::from("N") {
         loop {
+            if remain_y <= 0 {
+                break;
+            }
+
             if remain_y - robot_can_move_distance <= 0 {
                 robot.move_y(remain_y);
             } else {
@@ -86,13 +113,13 @@ fn main() {
             }
             remain_y -= robot_can_move_distance;
             order_count += 1;
-
-            if remain_y <= 0 {
-                break;
-            }
         }
     } else if robot.direction == String::from("E") {
         loop {
+            if remain_x <= 0 {
+                break;
+            }
+
             if remain_x - robot_can_move_distance <= 0 {
                 robot.move_x(remain_x);
             } else {
@@ -101,12 +128,62 @@ fn main() {
             remain_x -= robot_can_move_distance;
             order_count += 1;
 
-            if remain_x <= 0 {
-                break;
-            }
         }
     } else if robot.direction == String::from("W") {
         loop {
+            if remain_x <= 0 {
+                break;
+            }
+
+            if remain_x - robot_can_move_distance <= 0 {
+                robot.move_x(remain_x * -1);
+            } else {
+                robot.move_x(robot_can_move_distance * -1);
+            }
+            remain_x -= robot_can_move_distance;
+            order_count += 1;
+        }
+    }
+
+    // 3. 回転する
+    if robot.direction == String::from("N") {
+        if x_goal > 0 {
+            robot.rotate_90_degree();
+            order_count += 1;
+        } else if x_goal < 0 {
+            robot.rotate_minus_90_degree();
+            order_count += 1;
+        }
+    } else if robot.direction == String::from("E") {
+        robot.rotate_90_degree();
+        order_count += 1;
+    } else if robot.direction == String::from("W") {
+        robot.rotate_minus_90_degree();
+        order_count += 1;
+    }
+
+    // 4. 残りの分進行する
+    if robot.direction == String::from("E") {
+        loop {
+            if remain_x <= 0 {
+                break;
+            }
+
+            if remain_x - robot_can_move_distance <= 0 {
+                robot.move_x(remain_x);
+            } else {
+                robot.move_x(robot_can_move_distance);
+            }
+            remain_x -= robot_can_move_distance;
+            order_count += 1;
+
+        }
+    } else if robot.direction == String::from("W") {
+        loop {
+            if remain_x <= 0 {
+                break;
+            }
+
             if remain_x - robot_can_move_distance <= 0 {
                 robot.move_x(remain_x * -1);
             } else {
@@ -115,16 +192,23 @@ fn main() {
             remain_x -= robot_can_move_distance;
             order_count += 1;
 
-            if remain_x <= 0 {
+        }
+    } else if robot.direction == String::from("S") {
+        loop {
+            if remain_y <= 0 {
                 break;
             }
+
+            if remain_y - robot_can_move_distance <= 0 {
+                robot.move_y(remain_y * -1);
+            } else {
+                robot.move_y(robot_can_move_distance * -1);
+            }
+            remain_y -= robot_can_move_distance;
+            order_count += 1;
+
         }
     }
 
-    // 3. 回転する
-
-    // 4. 残りの分進行する
-
-    println!("{:?}", robot);
-    println!("order_count : {}", order_count);
+    println!("{}", order_count);
 }
