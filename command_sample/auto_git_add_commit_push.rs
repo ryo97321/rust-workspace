@@ -1,4 +1,5 @@
 use std::process::Command;
+use std::io::{stdout, Write};
 
 fn getline() -> String {
     let mut __ret = String::new();
@@ -7,8 +8,15 @@ fn getline() -> String {
 }
 
 fn main() {
+    print!("fileName: ");
+    stdout().flush().unwrap();
     let input = getline();
     let file_name = input.trim();
+
+    print!("commit message: ");
+    stdout().flush().unwrap();
+    let input = getline();
+    let commit_message = input.trim();
 
     let git_add_status = Command::new("git")
                     .arg("add")
@@ -17,10 +25,10 @@ fn main() {
                     .expect("failed to execute add");
 
     if git_add_status.success() {
-        println!("\n{} added.", file_name);
+        println!("\n{} added.\n", file_name);
     }
 
-    let commit_message = format!("add {}", file_name);
+    // let commit_message = format!("add {}", file_name);
     let git_commit_status = Command::new("git")
                     .arg("commit")
                     .arg("-m")
@@ -29,7 +37,7 @@ fn main() {
                     .expect("failed to execute commit");
 
     if git_commit_status.success() {
-        println!("\n{} commited.", file_name);
+        println!("\n{} commited.\n", file_name);
     }
 
     let git_push_status = Command::new("git")
