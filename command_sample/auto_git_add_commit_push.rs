@@ -18,6 +18,7 @@ fn main() {
     let input = getline();
     let commit_message = input.trim();
 
+    // git add
     let git_add_status = Command::new("git")
                     .arg("add")
                     .arg(file_name)
@@ -28,7 +29,7 @@ fn main() {
         println!("\n{} added.\n", file_name);
     }
 
-    // let commit_message = format!("add {}", file_name);
+    // git commit
     let git_commit_status = Command::new("git")
                     .arg("commit")
                     .arg("-m")
@@ -40,6 +41,7 @@ fn main() {
         println!("\n{} commited.\n", file_name);
     }
 
+    // git push
     let git_push_status = Command::new("git")
                     .arg("push")
                     .status()
