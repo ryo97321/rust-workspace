@@ -5,18 +5,28 @@ fn getline() -> String {
 }
 
 fn main() {
-    let line = getline();
-    let ab: Vec<_> = line.trim().split(' ').collect();
-    let a: i32 = ab[0].parse().unwrap();
-    let b: i32 = ab[1].parse().unwrap();
+    let mut number_of_correct_type = 0;
+    let mut number_of_miss_type = 0;
 
-    let answer: i32;
+    let number_of_game: i32 = getline().trim().parse().unwrap();
 
-    if b % a == 0 {
-        answer = b / a;
-    } else {
-        answer = (b / a) + 1;
+    for _ in 0..number_of_game {
+        let line = getline();
+        let params: Vec<_> = line.trim().split(' ').collect();
+
+        let time_limit: f64 = params[0].parse().unwrap();
+        let word = params[1];
+        let word_length = word.len();
+
+        let can_type_max_word_length = (12.0 * time_limit / 1000.0) as usize;
+
+        if can_type_max_word_length >= word_length {
+            number_of_correct_type += word_length;
+        } else {
+            number_of_correct_type += can_type_max_word_length;
+            number_of_miss_type += word_length - can_type_max_word_length;
+        }
     }
 
-    println!("{}", answer);
+    println!("{} {}", number_of_correct_type, number_of_miss_type);
 }
