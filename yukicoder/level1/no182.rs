@@ -18,33 +18,33 @@ fn main() {
         v.push(number);
     }
 
-    // vの中でmaxを探す
-    let mut max = 0;
+    if v.len() == 1 {
+        unique_number_count = 1;
+    } else {
+        v.sort();
 
-    for i in 0..number_of_integer {
-        if v[i] > max {
-            max = v[i];
-        }
-    }
+        let mut number_length = 1;
+        let mut before_number = v[0];
 
-    // 要素数maxの新しいvectorを作成する
-    let mut number_appear_count_vector: Vec<i32> = Vec::new();
-    for _ in 0..max {
-        number_appear_count_vector.push(0);
-    }
+        for i in 1..number_of_integer {
+            let mut is_before_number_changed = false;
 
-    let number_appear_count_vector_length = number_appear_count_vector.len();
+            if v[i] == before_number {
+                number_length += 1;
+            } else if v[i] != before_number {
+                if number_length == 1 {
+                    unique_number_count += 1;
+                }
+                is_before_number_changed = true;
+                before_number = v[i];
+                number_length = 1;
+            }
 
-    // vを走査し, vector[v[i]-1] += 1
-    for i in 0..number_of_integer {
-        let increment_index = (v[i] - 1) as usize; 
-        number_appear_count_vector[increment_index] += 1;
-    }
-
-    // vectorのなかで vector[i] == 1 を見つけるたび, unique_number_count += 1
-    for i in 0..number_appear_count_vector_length {
-        if number_appear_count_vector[i] == 1 {
-            unique_number_count += 1;
+            if i == number_of_integer - 1 {
+                if is_before_number_changed == true {
+                    unique_number_count += 1;
+                }
+            }
         }
     }
 
