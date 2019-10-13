@@ -22,7 +22,15 @@ fn main() {
 
     themes.sort();
 
+    let themes_max = themes[themes.len()-1];
+    let mut answer_candidate_count = 0;
+
     for i in 0..n {
-        println!("{}", themes[i]);
+        let theme_plus_x = themes[i] + x;
+        if theme_plus_x >= themes_max {
+            answer_candidate_count += 1;
+        }
     }
+
+    println!("{}", answer_candidate_count);
 }
