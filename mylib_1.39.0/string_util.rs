@@ -10,16 +10,5 @@ pub fn getline() -> String {
 
 // Stringを逆にして返す（ex. test -> tset）
 pub fn reverse_str(input: &String) -> String {
-    let mut reversed = String::new();
-    let mut chars: Vec<char> = Vec::new();
-
-    for c in input.chars().into_iter() {
-        chars.push(c);
-    }
-
-    for i in (0..chars.len()).rev() {
-        reversed += &chars[i].to_string();
-    }
-
-    return reversed;
+    input.chars().rev().collect()
 }
