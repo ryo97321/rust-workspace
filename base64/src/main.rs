@@ -15,17 +15,8 @@ fn make_conversion_table() -> HashMap<String, String> {
     let values = vec!["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"];
 
     for i in 0..values.len() {
-        let mut bin = format!("{:b}", i as i32);
-        if bin.len() < 6 {
-            let add_zero_count = 6 - bin.len();
-            let mut add_zero_str = String::new();
-            for _ in 0..add_zero_count {
-                add_zero_str += "0";
-            }
-            bin = add_zero_str + &bin;
-        }
-        let key = bin;
-        conversion_table.insert(key, values[i].to_string());
+        let bin = format!("{:06b}", i as i32);
+        conversion_table.insert(bin, values[i].to_string());
     }
 
     return conversion_table;
@@ -40,17 +31,7 @@ fn main() {
 
     // plainをバイナリ化してall_bitsに格納
     for c in plain.chars().into_iter() {
-        let mut bin = format!("{:b}", c as i32);
-        let add_zero_count = 8 - bin.len();
-
-        // binの桁数が8未満の時は, 先頭に0を追加する
-        if add_zero_count != 0 {
-            let mut add_zero_str = String::new();
-            for _ in 0..add_zero_count {
-                add_zero_str += "0";
-            }
-            bin = add_zero_str + &bin;
-        }
+        let bin = format!("{:08b}", c as i32);
         all_bits += &bin;
     }
 
@@ -80,13 +61,8 @@ fn main() {
     }
 
     let conversion_table = make_conversion_table();     // base64変換表
-    let mut base64_str = String::new();                 // base64に変換した文字列
 
-    // six_bitsを変換表に基づき変換し, base64_strに追加する
-    for six_bit in six_bits {
-        let base64_character = &conversion_table[&six_bit];
-        base64_str += &base64_character;
-    }
+    let mut base64_str = six_bits.iter().flat_map(|six_bit| conversion_table[six_bit].chars()).collect::<String>();     // base64に変換した文字列
 
     // 足りない分"="を, base64_strに追加する
     if base64_str.len() % 4 != 0 {
