@@ -230,14 +230,19 @@ fn main() {
         board.push(board_line);
     }
 
-    let place_queen_num: usize = 4;    // 設置するクイーンの数
+    let place_queen_num: usize = 7;    // 設置するクイーンの数
     let mut placed_queen_num = 0;      // すでに設置したクイーンの数
 
     let mut placed_queen_xs: Vec<usize> = Vec::new();       // 設置したクイーンのx座標のvector
     let mut placed_queen_ys: Vec<usize> = Vec::new();       // 設置したクイーンのy座標のvector
 
+    let max_try_num = 5;        // 最大試行回数
+    let mut try_num = 0;        // クイーンの配置を試行した回数（max_try_numまで達したら, ひとつ前に配置したクイーンを取り除く）
+
     // 指定した数のクイーンを設置する
     loop {
+        try_num += 1;
+
         let mut rng = rand::thread_rng();
         let mut rand_num: f64 = rng.gen();
         rand_num *= 7.0;
@@ -261,6 +266,7 @@ fn main() {
             if is_place_duplicate {
                 placed_queen_xs.pop();
                 placed_queen_ys.pop();
+                try_num = 0;
                 continue;
             }
         }
@@ -275,8 +281,21 @@ fn main() {
             placed_queen_num -= 1;
             placed_queen_xs.pop();
             placed_queen_ys.pop();
+        } else {
+            try_num = 0;
         }
 
+
+        // 試行回数がmax_try_numに達したらひとつ前に配置したクイーンを削除する
+        if try_num == max_try_num {
+            let remove_queen_x = placed_queen_xs.pop().unwrap();
+            let remove_queen_y = placed_queen_ys.pop().unwrap();
+            board[remove_queen_x][remove_queen_y] = '.';
+            placed_queen_num -= 1;
+            try_num = 0;
+        }
+
+        // 途中経過を表示
         println!();
         for i in 0..board_length {
             for j in 0..board_length {
@@ -300,7 +319,3 @@ fn main() {
         println!();
     }
 }
-
-// TODO
-// 設置できる猶予があるのにもかかわらず, 無限ループに陥っているので
-// 全体を見直す
