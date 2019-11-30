@@ -1,0 +1,33 @@
+c****cww**w***w
+
+count = 0    // 文字列走査のたびに+1
+c_flag = false
+w1_flag = false
+w2_flag = false
+
+1. cを探す
+2. wを探す(この途中にcが出てきたらcount=0)
+3. wを探す(この途中にcが出てきたらcount=0)
+
+・ c_flag == false
+cが出たら, c_flag = true, count = 1
+
+・ c_flag == true && w1_flag == false
+wが出るまで, count += 1
+wが出たら, w1_flag = true
+cが出たら, w1_flag = false, count = 1
+
+・ c_flag == true && w1_flag == true && w2_flag == false
+wが出るまで, count += 1
+wが出たら, w2_flag = true
+cが出たら, w1_flag = false, w2_flag = false, count = 1
+
+・ c_flag == true && w1_flag == true && w2_flag == true
+cが出たら, w1_flag = false, w2_flag = false, count = 1
+
+
+最終的に, 
+c_flag == true && w1_flag == true && w2_flag == true
+println!("{}", count);
+else
+println!("-1");
