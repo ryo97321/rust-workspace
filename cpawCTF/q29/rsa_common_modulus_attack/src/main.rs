@@ -51,24 +51,28 @@ fn main() {
     let zero_bigint: BigInt = Zero::zero();
     let one_bigint: BigInt = One::one();
 
-    if s1 < zero_bigint {
-        s1 = &s1 * -1;
-        s1 = &one_bigint / &s1;
-        println!("s1: {}", s1);
-    }
+    // if s1 < zero_bigint {
+    //     s1 = &s1 * -1;
+    //     s1 = &one_bigint / &s1;
+    //     println!("s1: {}", s1);
+    // }
 
-    if s2 < zero_bigint {
-        s2 = &s2 * -1;
-        s2 = &one_bigint / &s2;
-        println!("s2: {}", s2);
-    }
+    // if s2 < zero_bigint {
+    //     s2 = &s2 * -1;
+    //     s2 = &one_bigint / &s2;
+    //     println!("s2: {}", s2);
+    // }
 
-    let s1_biguint: BigUint = s1.to_biguint().unwrap();
-    let s2_biguint: BigUint = s2.to_biguint().unwrap();
+    // let s1_biguint: BigUint = s1.to_biguint().unwrap();
+    // let s2_biguint: BigUint = s2.to_biguint().unwrap();
+
+    // make 分母
+    // make 分子
+    // 分子 / 分母 = m
 
     // it return not correct answer
-    let m = c1.pow(s1_biguint) + c2.pow(s2_biguint);
-    println!("m : {}", m)
+    let m = c1.pow(s1_biguint) * c2.pow(s2_biguint);
+    println!("m : {}", m);
 
     // println!("e1 * s1 = {} * {} = {}", e1, s1, &e1*&s1);
     // println!("e2 * s2 = {} * {} = {}", e2, s2, &e2*&s2);
