@@ -15,17 +15,15 @@ fn main() {
     v.push(f0);
     v.push(f1);
 
+    let f2: i64 = f0 ^ f1;
+    v.push(f2);
 
-    let mut f: i64;
-    loop {
-        if v.len() == n {
-            break;
-        }
-
-        f = v[v.len()-1] ^ v[v.len()-2];
-        v.push(f);
+    let answer: i64;
+    if n < 2 {
+        answer = v[n];
+    } else {
+        answer = v[n%3];
     }
 
-    let mut v_last = v[v.len()-1];
-    println!("{}", v_last);
+    println!("{}", answer);
 }
