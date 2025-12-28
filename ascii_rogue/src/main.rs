@@ -13,7 +13,7 @@ fn main() {
     let mut py: i32 = 1;
 
     loop {
-        println!("\n\n");
+        clear_screen();
         draw(&map, px, py);
         println!("Move with WASD (single step): ");
 
@@ -40,7 +40,12 @@ fn main() {
         }
     }
 
+    clear_screen();
     println!("Bye!");
+}
+
+fn clear_screen() {
+    print!("\x1B[2J\x1B[H");
 }
 
 fn is_wall(map: &[&str], x: i32, y: i32) -> bool {
