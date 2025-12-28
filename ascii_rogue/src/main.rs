@@ -1,4 +1,4 @@
-use std::io::{self, Read};
+use std::io;
 
 fn main() {
     let map = [
@@ -25,16 +25,33 @@ fn main() {
             break;
         }
 
+        let (mut nx, mut ny) = (px, py);
         match c {
-            'w' | 'W' => py -= 1,
-            's' | 'S' => py += 1,
-            'a' | 'A' => px -= 1,
-            'd' | 'D' => px += 1,
+            'w' | 'W' => ny -= 1,
+            's' | 'S' => ny += 1,
+            'a' | 'A' => nx -= 1,
+            'd' | 'D' => nx += 1,
             _ => {}
+        }
+
+        if !is_wall(&map, nx, ny) {
+            px = nx;
+            py = ny;
         }
     }
 
     println!("Bye!");
+}
+
+fn is_wall(map: &[&str], x: i32, y: i32) -> bool {
+    if y < 0 || y as usize >= map.len() {
+        return true;
+    }
+    let row = map[y as usize];
+    if x < 0 || x as usize >= row.chars().count() {
+        return true;
+    }
+    row.chars().nth(x as usize).unwrap() == '#'
 }
 
 fn draw(map: &[&str], px: i32, py: i32) {
