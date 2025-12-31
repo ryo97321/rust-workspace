@@ -1,13 +1,16 @@
 use std::io;
 
 fn main() {
-    let map = [
+    let map: Vec<Vec<char>> = [
         "##########",
         "#........#",
         "#..####..#",
         "#........#",
         "##########",
-    ];
+    ]
+    .iter()
+    .map(|row| row.chars().collect())
+    .collect();
 
     let mut px: i32 = 1;
     let mut py: i32 = 1;
@@ -15,7 +18,7 @@ fn main() {
     loop {
         clear_screen();
         draw(&map, px, py);
-        println!("Move with WASD (single step): ");
+        println!("WASD to move, q to quit >  ");
 
         let mut buf = String::new();
         io::stdin().read_line(&mut buf).unwrap();
@@ -48,21 +51,21 @@ fn clear_screen() {
     print!("\x1B[2J\x1B[H");
 }
 
-fn is_wall(map: &[&str], x: i32, y: i32) -> bool {
+fn is_wall(map: &[Vec<char>], x: i32, y: i32) -> bool {
     if y < 0 || y as usize >= map.len() {
         return true;
     }
-    let row = map[y as usize];
-    if x < 0 || x as usize >= row.chars().count() {
+    let row = &map[y as usize];
+    if x < 0 || x as usize >= row.len() {
         return true;
     }
-    row.chars().nth(x as usize).unwrap() == '#'
+    row[x as usize] == '#'
 }
 
-fn draw(map: &[&str], px: i32, py: i32) {
+fn draw(map: &[Vec<char>], px: i32, py: i32) {
     for (y, row) in map.iter().enumerate() {
-        let mut line = String::new();
-        for (x, ch) in row.chars().enumerate() {
+        let mut line = String::with_capacity(row.len());
+        for (x, &ch) in row.iter().enumerate() {
             if x as i32 == px && y as i32 == py {
                 line.push('@');
             } else {
