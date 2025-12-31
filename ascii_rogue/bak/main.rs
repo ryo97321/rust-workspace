@@ -1,20 +1,11 @@
+use std::io;
 use crossterm::{
-    cursor::{Hide, MoveTo, Show},
     event::{read, Event, KeyCode},
-    queue,
-    style::Print,
-    terminal::{
-        disable_raw_mode, enable_raw_mode, Clear, ClearType, DisableLineWrap, EnableLineWrap
-    },
+    terminal::{disable_raw_mode, enable_raw_mode},
 };
-use std::io::{self, stdout, Write};
 
-fn main() -> io::Result<()> {
-    enable_raw_mode()?;
-
-    let mut out = stdout();
-    queue!(out, Hide, DisableLineWrap)?;
-    out.flush()?;
+fn main() {
+    enable_raw_mode().unwrap();
 
     let map: Vec<Vec<char>> = [
         "##########",
@@ -31,22 +22,11 @@ fn main() -> io::Result<()> {
     let mut py: i32 = 1;
 
     loop {
-        queue!(out, Clear(ClearType::All), MoveTo(0,0))?;
+        clear_screen();
+        draw(&map, px, py);
+        println!("WASD to move, q to quit >  ");
 
-        draw(&mut out, &map, px, py)?;
-
-        let msg_y = map.len() as u16 + 1;
-
-        queue!(
-            out,
-            MoveTo(0, msg_y),
-            Clear(ClearType::CurrentLine),
-            Print("WASD to move, q to quit")
-        )?;
-
-        out.flush()?;
-
-        match read()? {
+        match read().unwrap() {
             Event::Key(event) => {
                 let (mut nx, mut ny) = (px, py);
 
@@ -68,17 +48,13 @@ fn main() -> io::Result<()> {
         }
     }
 
-    queue!(
-        out,
-        Clear(ClearType::All),
-        MoveTo(0, 0),
-        EnableLineWrap,
-        Show
-    )?;
+    disable_raw_mode().unwrap();
+    clear_screen();
+    println!("Bye!");
+}
 
-    out.flush()?;
-    disable_raw_mode()?;
-    Ok(())
+fn clear_screen() {
+    print!("\x1B[2J\x1B[H");
 }
 
 fn is_wall(map: &[Vec<char>], x: i32, y: i32) -> bool {
@@ -92,15 +68,17 @@ fn is_wall(map: &[Vec<char>], x: i32, y: i32) -> bool {
     row[x as usize] == '#'
 }
 
-fn draw(out: &mut impl Write, map: &[Vec<char>], px: i32, py: i32) -> io::Result<()> {
+fn draw(map: &[Vec<char>], px: i32, py: i32) {
     for (y, row) in map.iter().enumerate() {
         let mut line = String::with_capacity(row.len());
         for (x, &ch) in row.iter().enumerate() {
-            let c = if x as i32 == px && y as i32 == py { '@' } else { ch };
-            line.push(c);
+            if x as i32 == px && y as i32 == py {
+                line.push('@');
+            } else {
+                line.push(ch);
+            }
         }
-        queue!(out, MoveTo(0, y as u16), Print(&line))?;
+        println!("{line}");
     }
-    Ok(())
 }
 
