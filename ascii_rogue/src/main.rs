@@ -35,25 +35,38 @@ fn main() -> io::Result<()> {
     let mut ex: i32 = 5;
     let mut ey: i32 = 1;
 
+    let mut hp: i32 = 10;
+    let mut message = String::from("WASD to move, q to quit");
+
     let mut rng = thread_rng();
 
     loop {
         queue!(out, Clear(ClearType::All), MoveTo(0,0))?;
-
         draw(&mut out, &map, px, py, ex, ey)?;
 
-        let msg_y = map.len() as u16 + 1;
+        let status_y = map.len() as u16 + 1;
+        queue!(
+            out,
+            MoveTo(0, status_y),
+            Clear(ClearType::CurrentLine),
+            Print(format!("HP: {hp}"))
+        )?;
+
+        let msg_y = map.len() as u16 + 2;
         queue!(
             out,
             MoveTo(0, msg_y),
             Clear(ClearType::CurrentLine),
-            Print("WASD to move, q to quit (enemy: wanders)")
+            Print(&message)
         )?;
 
         out.flush()?;
 
         match read()? {
             Event::Key(event) => {
+                message.clear();
+                message.push_str("WASD to move, q to quit");
+
                 if let KeyCode::Char('q') = event.code {
                     break;
                 }
@@ -72,12 +85,22 @@ fn main() -> io::Result<()> {
                     py = ny;
                 }
 
+                // Move Enemy
                 (ex, ey) = move_enemy_random(&map, ex, ey, &mut rng);
+
+                // Judge
+                if px == ex && py == ey {
+                    hp -= 1;
+                    message = format!("Ouch! Enemy hit you. HP is now {hp}");
+                } else {
+                    message = "You moved. Enemy wanderd.".to_string();
+                }
             }
             _ => {}
         }
     }
 
+    // End Graphic
     queue!(
         out,
         Clear(ClearType::All),
@@ -88,6 +111,12 @@ fn main() -> io::Result<()> {
 
     out.flush()?;
     disable_raw_mode()?;
+
+    if hp <= 0 {
+        println!("GAME OVER");
+    } else {
+        println!("Bye!");
+    }
     Ok(())
 }
 
