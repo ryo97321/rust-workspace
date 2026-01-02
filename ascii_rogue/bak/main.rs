@@ -1,11 +1,20 @@
-use std::io;
 use crossterm::{
+    cursor::{Hide, MoveTo, Show},
     event::{read, Event, KeyCode},
-    terminal::{disable_raw_mode, enable_raw_mode},
+    queue,
+    style::Print,
+    terminal::{
+        disable_raw_mode, enable_raw_mode, Clear, ClearType, DisableLineWrap, EnableLineWrap
+    },
 };
+use std::io::{self, stdout, Write};
 
-fn main() {
-    enable_raw_mode().unwrap();
+fn main() -> io::Result<()> {
+    enable_raw_mode()?;
+
+    let mut out = stdout();
+    queue!(out, Hide, DisableLineWrap)?;
+    out.flush()?;
 
     let map: Vec<Vec<char>> = [
         "##########",
@@ -21,12 +30,26 @@ fn main() {
     let mut px: i32 = 1;
     let mut py: i32 = 1;
 
-    loop {
-        clear_screen();
-        draw(&map, px, py);
-        println!("WASD to move, q to quit >  ");
+    let mut ex: i32 = 5;
+    let mut ey: i32 = 1;
 
-        match read().unwrap() {
+    loop {
+        queue!(out, Clear(ClearType::All), MoveTo(0,0))?;
+
+        draw(&mut out, &map, px, py, ex, ey)?;
+
+        let msg_y = map.len() as u16 + 1;
+
+        queue!(
+            out,
+            MoveTo(0, msg_y),
+            Clear(ClearType::CurrentLine),
+            Print("WASD to move, q to quit (enemy: g)")
+        )?;
+
+        out.flush()?;
+
+        match read()? {
             Event::Key(event) => {
                 let (mut nx, mut ny) = (px, py);
 
@@ -48,13 +71,17 @@ fn main() {
         }
     }
 
-    disable_raw_mode().unwrap();
-    clear_screen();
-    println!("Bye!");
-}
+    queue!(
+        out,
+        Clear(ClearType::All),
+        MoveTo(0, 0),
+        EnableLineWrap,
+        Show
+    )?;
 
-fn clear_screen() {
-    print!("\x1B[2J\x1B[H");
+    out.flush()?;
+    disable_raw_mode()?;
+    Ok(())
 }
 
 fn is_wall(map: &[Vec<char>], x: i32, y: i32) -> bool {
@@ -68,17 +95,30 @@ fn is_wall(map: &[Vec<char>], x: i32, y: i32) -> bool {
     row[x as usize] == '#'
 }
 
-fn draw(map: &[Vec<char>], px: i32, py: i32) {
+fn draw(
+    out: &mut impl Write,
+    map: &[Vec<char>],
+    px: i32,
+    py: i32,
+    ex: i32,
+    ey: i32) -> io::Result<()> {
     for (y, row) in map.iter().enumerate() {
         let mut line = String::with_capacity(row.len());
         for (x, &ch) in row.iter().enumerate() {
-            if x as i32 == px && y as i32 == py {
-                line.push('@');
+            let xi = x as i32;
+            let yi = y as i32;
+
+            let c = if xi == px && yi == py {
+                '@'
+            } else if xi == ex && yi == ey {
+                'g'
             } else {
-                line.push(ch);
-            }
+                ch
+            };
+            line.push(c);
         }
-        println!("{line}");
+        queue!(out, MoveTo(0, y as u16), Print(&line))?;
     }
+    Ok(())
 }
 

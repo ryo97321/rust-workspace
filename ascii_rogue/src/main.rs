@@ -7,6 +7,8 @@ use crossterm::{
         disable_raw_mode, enable_raw_mode, Clear, ClearType, DisableLineWrap, EnableLineWrap
     },
 };
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 use std::io::{self, stdout, Write};
 
 fn main() -> io::Result<()> {
@@ -30,28 +32,34 @@ fn main() -> io::Result<()> {
     let mut px: i32 = 1;
     let mut py: i32 = 1;
 
+    let mut ex: i32 = 5;
+    let mut ey: i32 = 1;
+
+    let mut rng = thread_rng();
+
     loop {
         queue!(out, Clear(ClearType::All), MoveTo(0,0))?;
 
-        draw(&mut out, &map, px, py)?;
+        draw(&mut out, &map, px, py, ex, ey)?;
 
         let msg_y = map.len() as u16 + 1;
-
         queue!(
             out,
             MoveTo(0, msg_y),
             Clear(ClearType::CurrentLine),
-            Print("WASD to move, q to quit")
+            Print("WASD to move, q to quit (enemy: wanders)")
         )?;
 
         out.flush()?;
 
         match read()? {
             Event::Key(event) => {
-                let (mut nx, mut ny) = (px, py);
+                if let KeyCode::Char('q') = event.code {
+                    break;
+                }
 
+                let (mut nx, mut ny) = (px, py);
                 match event.code {
-                    KeyCode::Char('q') => break,
                     KeyCode::Char('w') => ny -= 1,
                     KeyCode::Char('s') => ny += 1,
                     KeyCode::Char('a') => nx -= 1,
@@ -63,6 +71,8 @@ fn main() -> io::Result<()> {
                     px = nx;
                     py = ny;
                 }
+
+                (ex, ey) = move_enemy_random(&map, ex, ey, &mut rng);
             }
             _ => {}
         }
@@ -92,11 +102,45 @@ fn is_wall(map: &[Vec<char>], x: i32, y: i32) -> bool {
     row[x as usize] == '#'
 }
 
-fn draw(out: &mut impl Write, map: &[Vec<char>], px: i32, py: i32) -> io::Result<()> {
+fn move_enemy_random(
+    map: &[Vec<char>],
+    ex: i32,
+    ey: i32,
+    rng: &mut impl rand::Rng,
+) -> (i32, i32) {
+    let mut dirs = [(0, -1), (0, 1), (-1, 0), (1, 0)];
+    dirs.shuffle(rng);
+
+    for (dx, dy) in dirs {
+        let nx = ex + dx;
+        let ny = ey + dy;
+        if !is_wall(map, nx, ny) {
+            return (nx, ny);
+        }
+    }
+    (ex, ey)
+}
+
+fn draw(
+    out: &mut impl Write,
+    map: &[Vec<char>],
+    px: i32,
+    py: i32,
+    ex: i32,
+    ey: i32) -> io::Result<()> {
     for (y, row) in map.iter().enumerate() {
         let mut line = String::with_capacity(row.len());
         for (x, &ch) in row.iter().enumerate() {
-            let c = if x as i32 == px && y as i32 == py { '@' } else { ch };
+            let xi = x as i32;
+            let yi = y as i32;
+
+            let c = if xi == px && yi == py {
+                '@'
+            } else if xi == ex && yi == ey {
+                'g'
+            } else {
+                ch
+            };
             line.push(c);
         }
         queue!(out, MoveTo(0, y as u16), Print(&line))?;
